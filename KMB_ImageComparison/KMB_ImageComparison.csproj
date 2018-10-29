@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{005C7396-10A0-4AEA-849D-B662A35CC29F}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>KMB_ImageComparison</RootNamespace>
+    <AssemblyName>KMB_ImageComparison</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="Shipwreck.Phash, Version=0.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Shipwreck.Phash.0.2.2\lib\net452\Shipwreck.Phash.dll</HintPath>
+    </Reference>
+    <Reference Include="Shipwreck.Phash.Bitmaps, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Shipwreck.Phash.Bitmaps.0.2.1\lib\net452\Shipwreck.Phash.Bitmaps.dll</HintPath>
+    </Reference>
+    <Reference Include="Shipwreck.Phash.PresentationCore, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Shipwreck.Phash.PresentationCore.0.2.0\lib\net452\Shipwreck.Phash.PresentationCore.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.3.0\lib\portable-net45+win8+wp8+wpa81\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <HintPath>..\packages\WindowsBase.4.6.1055.0\lib\WindowsBase.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration.cs" />
+    <Compile Include="Connected Services\PP_SOAP_Service\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService.wsdl" />
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService1.wsdl" />
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService10.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService11.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService12.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService13.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService14.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService15.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService16.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService17.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService18.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService5.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService6.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService7.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService8.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\ExtendedPublicService9.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.AssetContainerItem.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.AssetContainerTotalAssets.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.AssetFieldValues.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.AssetItemCollection.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.AssetMetadata.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.AssetSelection.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.AssetVersion.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.BusinessProcessShort.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.CoreInfo.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.Download.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.ExtendedDerivative.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.FacetConfigurationExtended.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.FacetResults.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.Field.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.Language4Content.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.LanguageConfiguration.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.PortAssetItemCollection.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.PublicConfiguration.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.Rights.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.UserActionHistoryInfoCollection.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.UserCollection.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.UserData.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.UserDerivativeRights.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.UserGroupAssetContainerRights.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\PP_SOAP_Service\KMB_ImageComparison.PP_SOAP_Service.UserGroupAssetRights.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Connected Services\PP_SOAP_Service\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\PP_SOAP_Service\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\PP_SOAP_Service\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\PP_SOAP_Service\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

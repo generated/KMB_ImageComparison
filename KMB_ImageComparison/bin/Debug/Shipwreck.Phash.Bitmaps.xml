@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Shipwreck.Phash.Bitmaps</name>
+    </assembly>
+    <members>
+        <member name="M:Shipwreck.Phash.Bitmaps.BitmapExtensions.ToBytes(System.Drawing.Bitmap)">
+            <summary>
+            Copies the bitmap to its raw bytes format with stride bytes.
+            </summary>
+            <param name="bitmap">bitmap to convert</param>
+            <returns>Raw byte array with stride bytes</returns>
+        </member>
+        <member name="M:Shipwreck.Phash.Bitmaps.RawBitmapData.PixelColorExtractor.ExtractPixelBytesToColor(System.Byte[],System.Int32,System.Int32@,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            Extracts ARGB components from the raw bytes of a pixel.
+            </summary>
+            <param name="rawBytes">raw pixel bytes</param>
+            <param name="startIndex">start index in the raw byte array</param>
+            <param name="A">Output alpha component, optional</param>
+            <param name="R">Output red component, required</param>
+            <param name="G">Output green component, required</param>
+            <param name="B">Output blue component, required</param>
+        </member>
+    </members>
+</doc>
