@@ -1,4 +1,3 @@
-C:\VS Projects\KMB\KMB_ImageComparison\KMB_ImageComparison\obj\Debug\KMB_ImageComparison.exe
 C:\VS Projects\KMB\KMB_ImageComparison\KMB_ImageComparison\bin\Debug\KMB_ImageComparison.exe.config
 C:\VS Projects\KMB\KMB_ImageComparison\KMB_ImageComparison\bin\Debug\KMB_ImageComparison.exe
 C:\VS Projects\KMB\KMB_ImageComparison\KMB_ImageComparison\bin\Debug\KMB_ImageComparison.pdb
@@ -12,5 +11,5 @@ C:\VS Projects\KMB\KMB_ImageComparison\KMB_ImageComparison\bin\Debug\Newtonsoft.
 C:\VS Projects\KMB\KMB_ImageComparison\KMB_ImageComparison\bin\Debug\Shipwreck.Phash.xml
 C:\VS Projects\KMB\KMB_ImageComparison\KMB_ImageComparison\bin\Debug\Shipwreck.Phash.Bitmaps.xml
 C:\VS Projects\KMB\KMB_ImageComparison\KMB_ImageComparison\bin\Debug\System.Numerics.Vectors.xml
+C:\VS Projects\KMB\KMB_ImageComparison\KMB_ImageComparison\obj\Debug\KMB_ImageComparison.exe
 C:\VS Projects\KMB\KMB_ImageComparison\KMB_ImageComparison\obj\Debug\KMB_ImageComparison.pdb
-C:\VS Projects\KMB\KMB_ImageComparison\KMB_ImageComparison\obj\Debug\KMB_ImageComparison.csprojResolveAssemblyReference.cache

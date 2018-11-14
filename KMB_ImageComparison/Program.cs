@@ -11,19 +11,33 @@ using System.Drawing;
 using Newtonsoft.Json;
 using KMB_ImageComparison.PP_SOAP_Service;
 using System.Net;
+using System.Configuration;
 
 namespace KMB_ImageComparison
 {
     class Program
     {
         public static Field[] AssetFields;
-        public static ExtendedPublicServiceClient PictureparkService = new ExtendedPublicServiceClient("Default");
+        public static ExtendedPublicServiceClient PictureparkService = new ExtendedPublicServiceClient("Default") { };
         public static CoreInfo coreInfo;
 
         private static Configuration Configuration;
 
         static void Main(string[] args)
         {
+            try
+            {
+                var proxy = new WebProxy(ConfigurationManager.AppSettings["address"], true);
+                proxy.Credentials = new NetworkCredential(ConfigurationManager.AppSettings["user"], ConfigurationManager.AppSettings["password"]);
+                WebRequest.DefaultWebProxy = proxy;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: Please check proxy settings in KMB_ImageComparison.exe.config");
+                Console.ReadLine();
+                Environment.Exit(0);
+            }
+
             PictureparkService.InnerChannel.OperationTimeout = new TimeSpan(0, 20, 0);
 
             while (true)
