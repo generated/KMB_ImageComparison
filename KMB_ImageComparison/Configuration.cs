@@ -12,6 +12,8 @@ namespace KMB_ImageComparison
 
         public string ResultPath { get; set; }
 
+        public string LogPath { get; set; }
+
         public int PP_CustomerId { get; set; }
 
         public string PP_ClientGUID { get; set; }

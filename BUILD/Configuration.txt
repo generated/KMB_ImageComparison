@@ -1,0 +1,9 @@
+{
+  "ImagePath": "PATH_TO_IMAGE_FOLDER",
+  "ResultPath": "PATH_TO_RESULTS_FOLDER",
+  "LogPath": "PATH_TO_LOG_FOLDER",
+  "PP_CustomerId": 0,
+  "PP_ClientGUID": "PP_CLIENT_GUID",
+  "PP_Email": "PP_EMAIL",
+  "PP_Password": "PP_PASSWORD"
+}

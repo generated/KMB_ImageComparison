@@ -12,6 +12,12 @@ using Newtonsoft.Json;
 using KMB_ImageComparison.PP_SOAP_Service;
 using System.Net;
 using System.Configuration;
+using Emgu.CV;
+using Emgu.CV.Features2D;
+using Emgu.CV.Util;
+using Emgu.CV.Structure;
+using Emgu.CV.XFeatures2D;
+using Emgu.CV.CvEnum;
 
 namespace KMB_ImageComparison
 {
@@ -23,13 +29,18 @@ namespace KMB_ImageComparison
 
         private static Configuration Configuration;
 
+        private static string LogFile = "";
+
         static void Main(string[] args)
         {
             try
             {
-                var proxy = new WebProxy(ConfigurationManager.AppSettings["address"], true);
-                proxy.Credentials = new NetworkCredential(ConfigurationManager.AppSettings["user"], ConfigurationManager.AppSettings["password"]);
-                WebRequest.DefaultWebProxy = proxy;
+                if (ConfigurationManager.AppSettings["address"] != "")
+                {
+                    var proxy = new WebProxy(ConfigurationManager.AppSettings["address"], true);
+                    proxy.Credentials = new NetworkCredential(ConfigurationManager.AppSettings["user"], ConfigurationManager.AppSettings["password"]);
+                    WebRequest.DefaultWebProxy = proxy;
+                }
             }
             catch (Exception ex)
             {
@@ -51,62 +62,55 @@ namespace KMB_ImageComparison
                     //run comparison
                     case "1":
                         #region run comparison
+
+                        LogFile = DateTime.Now.ToString("yyyyMMdd_hhmmss") + "_ImageComparison_Log.txt";
                         if (CheckConfiguration())
                         {
+                            Log("Started comparison");
+
+                            Log("Config file ok..");
+
                             //get asset fields
                             AssetFields = PictureparkService.GetAssetFields(coreInfo);
+
+                            Log("Creating folder structure if not already existing");
 
                             //create temp folder if not already exists
                             string tempPath = Configuration.ResultPath + "\\temp";
                             if (!Directory.Exists(tempPath))
                                 Directory.CreateDirectory(tempPath);
 
-                            //create missing images folder if not already exists
-                            string missingImgPath = Configuration.ResultPath + "\\missing_on_pp";
-                            if (!Directory.Exists(missingImgPath))
-                                Directory.CreateDirectory(missingImgPath);
-
-                            //create missing images folder if not already exists
-                            string invalidAssetPath = Configuration.ResultPath + "\\invalid_asset_on_pp";
-                            if (!Directory.Exists(invalidAssetPath))
-                                Directory.CreateDirectory(invalidAssetPath);
-
-                            //create multiple standard images folder if not already exists
-                            string multipleStandardImgPath = Configuration.ResultPath + "\\multiple_w11_in_pp";
-                            if (!Directory.Exists(multipleStandardImgPath))
-                                Directory.CreateDirectory(multipleStandardImgPath);
-
-
-                            //create matching image folder if not already exists
-                            string matchingFolder = Configuration.ResultPath + "\\higher_99";
+                            //higher PHASH score than 65 or SIFT matching above 100
+                            string matchingFolder = Configuration.ResultPath + "\\01_matching";
                             if (!Directory.Exists(matchingFolder))
                                 Directory.CreateDirectory(matchingFolder);
+                            int matchingCount = 0;
 
-                            //create image folder if not already exists
-                            string between_85_and_99 = Configuration.ResultPath + "\\between_85_and_99";
-                            if (!Directory.Exists(between_85_and_99))
-                                Directory.CreateDirectory(between_85_and_99);
+                            //neither PHASH score above 65 or SIFT matching above 100
+                            string noMatchingFolder = Configuration.ResultPath + "\\02_not_matching";
+                            if (!Directory.Exists(noMatchingFolder))
+                                Directory.CreateDirectory(noMatchingFolder);
+                            int notMatchingCount = 0;
 
-                            //create image folder if not already exists
-                            string between_75_and_85 = Configuration.ResultPath + "\\between_75_and_85";
-                            if (!Directory.Exists(between_75_and_85))
-                                Directory.CreateDirectory(between_75_and_85);
+                            //create missing images folder if not already exists
+                            string missingImgPath = Configuration.ResultPath + "\\03_missing_on_pp";
+                            if (!Directory.Exists(missingImgPath))
+                                Directory.CreateDirectory(missingImgPath);
+                            int missingImgCount = 0;
 
-                            //create image folder if not already exists
-                            string between_65_and_75 = Configuration.ResultPath + "\\between_65_and_75";
-                            if (!Directory.Exists(between_65_and_75))
-                                Directory.CreateDirectory(between_65_and_75);
+                            //create multiple standard images folder if not already exists
+                            string multipleStandardImgPath = Configuration.ResultPath + "\\04_multiple_w11_in_pp";
+                            if (!Directory.Exists(multipleStandardImgPath))
+                                Directory.CreateDirectory(multipleStandardImgPath);
+                            int multipleW11Count = 0;
 
-                            //create image folder if not already exists
-                            string between_55_and_65 = Configuration.ResultPath + "\\between_55_and_65";
-                            if (!Directory.Exists(between_55_and_65))
-                                Directory.CreateDirectory(between_55_and_65);
+                            //create missing images folder if not already exists
+                            string invalidAssetPath = Configuration.ResultPath + "\\05_invalid_asset_on_pp";
+                            if (!Directory.Exists(invalidAssetPath))
+                                Directory.CreateDirectory(invalidAssetPath);
+                            int invalidAssetOnPPCount = 0;
 
-                            //create not matchign folder if not already exists
-                            string notMatchingFolder = Configuration.ResultPath + "\\lower_55";
-                            if (!Directory.Exists(notMatchingFolder))
-                                Directory.CreateDirectory(notMatchingFolder);
-
+                            int siftMatchingCount = 0;
 
                             //loop images in ImageFolder
                             DirectoryInfo imgDir = new DirectoryInfo(Configuration.ImagePath);
@@ -118,6 +122,7 @@ namespace KMB_ImageComparison
                                     coreInfo = LoginPP(PictureparkService);
 
                                     Console.WriteLine("Checking file: " + fileToCheck.Name);
+                                    Log("Checking file: " + fileToCheck.Name);
 
                                     //only check jpg files, ignore others
                                     if (fileToCheck.Extension.ToLower() == ".jpg")
@@ -146,9 +151,11 @@ namespace KMB_ImageComparison
 
                                             if (assets.Count() > 1)
                                             {
-                                                //more than 1 w11 exists for this objId
-                                                Console.WriteLine("More than 1 w11 exists for this objId");
+                                                //more than one w11 exists for this objId
+                                                Console.WriteLine("More than one w11 exists for this objId");
+                                                Log("More than one w11 exists for this objId");
                                                 File.Move(fileToCheck.FullName, multipleStandardImgPath + "\\" + fileToCheck.Name);
+                                                multipleW11Count++;
                                             }
                                             else if (assets.Count() == 1)
                                             {
@@ -177,6 +184,8 @@ namespace KMB_ImageComparison
                                                 {
                                                     File.Move(fileToCheck.FullName, invalidAssetPath + "\\" + fileToCheck.Name);
                                                     Console.WriteLine("Problem with asset on picturepark");
+                                                    Log("Problem with asset on picturepark");
+                                                    invalidAssetOnPPCount++;
                                                     continue;
                                                 }
 
@@ -184,62 +193,107 @@ namespace KMB_ImageComparison
                                                 string downloadFilePath = tempPath + "\\" + download.DownloadFileName;
                                                 client.DownloadFile(download.URL, downloadFilePath);
 
-                                                double comparisonScore = CompareImages(fileToCheck.FullName, downloadFilePath);
+                                                double phashScore = CompareImages(fileToCheck.FullName, downloadFilePath);
+
+                                                Console.WriteLine("PHASH-Score: " + phashScore);
+                                                Log("PHASH-Score: " + phashScore);
+
+                                                int siftScore = 0;
+
+                                                // PHASH does not match, check if SIFT finds matches
+                                                if (phashScore < 0.65)
+                                                {
+                                                    Console.WriteLine("PHASH-Score too low, checking SIFT Algorithm");
+                                                    Log("PHASH-Score too low, checking SIFT Algorithm");
+                                                    siftScore = SiftComparison(fileToCheck.FullName, downloadFilePath);
+                                                    Console.WriteLine("SIFT-Score: " + siftScore);
+                                                    Log("SIFT-Score: " + siftScore);
+
+                                                    if (siftScore > 100)
+                                                        siftMatchingCount++;
+                                                }
 
                                                 string folder;
 
-                                                if (comparisonScore > 0.99)
+                                                if (phashScore > 0.65 || siftScore > 100)
                                                 {
                                                     Console.WriteLine("Images match!");
+                                                    Log("Images match!");
                                                     folder = matchingFolder;
-                                                }
-                                                else if (comparisonScore > 0.95)
-                                                {
-                                                    Console.WriteLine("Images are between 0.85 and 0.99!");
-                                                    folder = between_85_and_99;
-                                                }
-                                                else if (comparisonScore > 0.9)
-                                                {
-                                                    Console.WriteLine("Images are between 0.75 and 0.85!");
-                                                    folder = between_75_and_85;
-                                                }
-                                                else if (comparisonScore > 0.8)
-                                                {
-                                                    Console.WriteLine("Images are between 0.65 and 0.75!");
-                                                    folder = between_65_and_75;
+                                                    matchingCount++;
                                                 }
                                                 else
                                                 {
-                                                    Console.WriteLine("Images do not match, lower than 0.65!");
-                                                    folder = notMatchingFolder;
+                                                    Console.WriteLine("Images do not match, lower PHASH than 0.65 and lower SIFT match than 100!");
+                                                    Log("Images do not match, lower PHASH than 0.65 and lower SIFT match than 100!");
+                                                    folder = noMatchingFolder;
+                                                    notMatchingCount++;
                                                 }
 
-                                                //create folder for image pair
-                                                string imagePairFolder = folder + "\\" + objId.ToString();
-                                                Directory.CreateDirectory(imagePairFolder);
+                                                string fullObjId = "0000000".Substring(0, 7 - objId.ToString().Length) + objId.ToString();
 
                                                 //move pair to folder
-                                                File.Move(fileToCheck.FullName, imagePairFolder + "\\" + fileToCheck.Name);
-                                                File.Move(downloadFilePath, imagePairFolder + "\\" + download.DownloadFileName);
+                                                File.Move(fileToCheck.FullName, folder + "\\" + fullObjId + "_mp.jpg");
+                                                File.Move(downloadFilePath, folder + "\\" + fullObjId + "_pp.jpg");
                                             }
                                             else
                                             {
                                                 //no asset found with this obj-id
                                                 Console.WriteLine("No asset found for ObjId: " + objId.ToString());
+                                                Log("No asset found for ObjId: " + objId.ToString());
                                                 File.Move(fileToCheck.FullName, missingImgPath + "\\" + fileToCheck.Name);
+                                                missingImgCount++;
                                             }
                                         }
                                         else
                                         {
                                             Console.WriteLine("Filename is not an obj-id, skipping");
+                                            Log("Filename is not an obj-id, skipping");
                                         }
                                     }
                                     else
                                     {
                                         Console.WriteLine("No jpg, skipping..");
+                                        Log("No jpg, skipping..");
                                     }
                                 }
+
+                                Console.WriteLine("-------------------------");
+                                Console.WriteLine("Image comparison finished");
+                                Console.WriteLine("-------------------------");
+                                Console.WriteLine("Total matches: " + matchingCount);
+                                Console.WriteLine("Matches with PHASH: " + matchingCount + siftMatchingCount);
+                                Console.WriteLine("Matches with SIFT: " + siftMatchingCount);
+                                Console.WriteLine("-------------------------");
+                                Console.WriteLine("Not matching: " + notMatchingCount);
+                                Console.WriteLine("-------------------------");
+                                Console.WriteLine("Missing assets in Picturepark: " + missingImgCount);
+                                Console.WriteLine("-------------------------");
+                                Console.WriteLine("Multiple W11 in Picturepark: " + multipleW11Count);
+                                Console.WriteLine("-------------------------");
+                                Console.WriteLine("Invalid assets in Picturepark: " + invalidAssetOnPPCount);
+                                Console.WriteLine("-------------------------");
+
+                                Log("-------------------------");
+                                Log("Image comparison finished");
+                                Log("-------------------------");
+                                Log("Total matches: " + matchingCount);
+                                Log("Matches with PHASH: " + matchingCount + siftMatchingCount);
+                                Log("Matches with SIFT: " + siftMatchingCount);
+                                Log("-------------------------");
+                                Log("Not matching: " + notMatchingCount);
+                                Log("-------------------------");
+                                Log("Missing assets in Picturepark: " + missingImgCount);
+                                Log("-------------------------");
+                                Log("Multiple W11 in Picturepark: " + multipleW11Count);
+                                Log("-------------------------");
+                                Log("Invalid assets in Picturepark: " + invalidAssetOnPPCount);
+                                Log("-------------------------");
                             }
+                        }
+                        else
+                        {
+                            Log("Config file invalid, aborting");
                         }
                         #endregion
                         break;
@@ -261,6 +315,7 @@ namespace KMB_ImageComparison
                         {
                             ImagePath = "PATH_TO_IMAGE_FOLDER",
                             ResultPath = "PATH_TO_RESULTS_FOLDER",
+                            LogPath = "PATH_TO_LOG_FOLDER",
                             PP_CustomerId = 0,
                             PP_ClientGUID = "PP_CLIENT_GUID",
                             PP_Email = "PP_EMAIL",
@@ -304,6 +359,7 @@ namespace KMB_ImageComparison
             if (!File.Exists("Configuration.txt"))
             {
                 Console.WriteLine("Config missing..");
+                Log("Config missing..");
                 return false;
             }
 
@@ -316,18 +372,21 @@ namespace KMB_ImageComparison
             catch (Exception ex)
             {
                 Console.WriteLine("Configuration invalid, unable to parse..");
+                Log("Configuration invalid, unable to parse..");
                 return false;
             }
 
             if (!Directory.Exists(Configuration.ImagePath))
             {
                 Console.WriteLine("ImagePath does not exist, please check the config file..");
+                Log("ImagePath does not exist, please check the config file..");
                 return false;
             }
 
             if (!Directory.Exists(Configuration.ResultPath))
             {
                 Console.WriteLine("ResultPath does not exist, please check the config file..");
+                Log("ResultPath does not exist, please check the config file..");
                 return false;
             }
 
@@ -337,6 +396,20 @@ namespace KMB_ImageComparison
             }
 
             return true;
+        }
+
+        private static void Log(string logLine)
+        {
+            try
+            {
+                logLine = DateTime.Now.ToString("HH:mm") + ": " + logLine;
+                File.AppendAllLines(Configuration.LogPath + "\\" + LogFile, new List<string>() { logLine });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Unable to log: " + ex.ToString());
+                Console.ReadLine();
+            }
         }
 
 
@@ -378,6 +451,48 @@ namespace KMB_ImageComparison
         public static int GetFieldIdByName(List<Field> assetFields, string name)
         {
             return assetFields.SingleOrDefault(f => f.Name == name).FieldId;
+        }
+
+        public static int SiftComparison(string img1, string img2)
+        {
+            var sift = new Emgu.CV.XFeatures2D.SIFT();
+
+            var modelKeyPoints = new VectorOfKeyPoint();
+            Mat modelDescriptors = new Mat();
+
+            var observedKeyPoints = new VectorOfKeyPoint();
+            Mat observedDescriptors = new Mat();
+            Mat mask = new Mat();
+
+            VectorOfVectorOfDMatch matches = new VectorOfVectorOfDMatch();
+            int k = 2;
+            double uniquenessThreshold = 0.80;
+
+            using (Mat modelImage = CvInvoke.Imread(img1, ImreadModes.Grayscale))
+            using (Mat observedImage = CvInvoke.Imread(img2, ImreadModes.Grayscale))
+            {
+                sift.DetectAndCompute(modelImage, null, modelKeyPoints, modelDescriptors, false);
+                sift.DetectAndCompute(observedImage, null, observedKeyPoints, observedDescriptors, false);
+                BFMatcher matcher = new BFMatcher(DistanceType.L1);
+
+                matcher.Add(modelDescriptors);
+                //matcher.Add(observedDescriptors);
+
+                matcher.KnnMatch(observedDescriptors, matches, k, null);
+                mask = new Mat(matches.Size, 1, DepthType.Cv8U, 1);
+                mask.SetTo(new MCvScalar(255));
+                Features2DToolbox.VoteForUniqueness(matches, uniquenessThreshold, mask);
+            }
+
+            int score = 0;
+            for (int i = 0; i < matches.Size; i++)
+            {
+                if (mask.GetData(i)[0] == 0) continue;
+                foreach (var e in matches[i].ToArray())
+                    ++score;
+            }
+
+            return score;
         }
     }
 }
