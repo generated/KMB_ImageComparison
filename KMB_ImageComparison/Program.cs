@@ -33,6 +33,8 @@ namespace KMB_ImageComparison
 
         static void Main(string[] args)
         {
+            SiftComparison(@"C:\temp\31818.jpg", @"C:\temp\compare.jpg");
+
             try
             {
                 if (ConfigurationManager.AppSettings["address"] != "")
@@ -262,7 +264,7 @@ namespace KMB_ImageComparison
                                 Console.WriteLine("Image comparison finished");
                                 Console.WriteLine("-------------------------");
                                 Console.WriteLine("Total matches: " + matchingCount);
-                                Console.WriteLine("Matches with PHASH: " + matchingCount + siftMatchingCount);
+                                Console.WriteLine("Matches with PHASH: " + ((int)matchingCount - (int)siftMatchingCount).ToString());
                                 Console.WriteLine("Matches with SIFT: " + siftMatchingCount);
                                 Console.WriteLine("-------------------------");
                                 Console.WriteLine("Not matching: " + notMatchingCount);
