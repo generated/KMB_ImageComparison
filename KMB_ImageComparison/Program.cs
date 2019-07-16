@@ -33,7 +33,7 @@ namespace KMB_ImageComparison
 
         static void Main(string[] args)
         {
-            SiftComparison(@"C:\temp\31818.jpg", @"C:\temp\compare.jpg");
+            SiftComparison(@"C:\temp\2.jpg", @"C:\temp\1.jpg");
 
             try
             {
@@ -123,7 +123,6 @@ namespace KMB_ImageComparison
                                 {
                                     coreInfo = LoginPP(PictureparkService);
 
-                                    Console.WriteLine("Checking file: " + fileToCheck.Name);
                                     Log("Checking file: " + fileToCheck.Name);
 
                                     //only check jpg files, ignore others
@@ -154,7 +153,6 @@ namespace KMB_ImageComparison
                                             if (assets.Count() > 1)
                                             {
                                                 //more than one w11 exists for this objId
-                                                Console.WriteLine("More than one w11 exists for this objId");
                                                 Log("More than one w11 exists for this objId");
                                                 File.Move(fileToCheck.FullName, multipleStandardImgPath + "\\" + fileToCheck.Name);
                                                 multipleW11Count++;
@@ -185,7 +183,6 @@ namespace KMB_ImageComparison
                                                 catch (Exception ex)
                                                 {
                                                     File.Move(fileToCheck.FullName, invalidAssetPath + "\\" + fileToCheck.Name);
-                                                    Console.WriteLine("Problem with asset on picturepark");
                                                     Log("Problem with asset on picturepark");
                                                     invalidAssetOnPPCount++;
                                                     continue;
@@ -197,7 +194,6 @@ namespace KMB_ImageComparison
 
                                                 double phashScore = CompareImages(fileToCheck.FullName, downloadFilePath);
 
-                                                Console.WriteLine("PHASH-Score: " + phashScore);
                                                 Log("PHASH-Score: " + phashScore);
 
                                                 int siftScore = 0;
@@ -205,10 +201,8 @@ namespace KMB_ImageComparison
                                                 // PHASH does not match, check if SIFT finds matches
                                                 if (phashScore < 0.65)
                                                 {
-                                                    Console.WriteLine("PHASH-Score too low, checking SIFT Algorithm");
                                                     Log("PHASH-Score too low, checking SIFT Algorithm");
                                                     siftScore = SiftComparison(fileToCheck.FullName, downloadFilePath);
-                                                    Console.WriteLine("SIFT-Score: " + siftScore);
                                                     Log("SIFT-Score: " + siftScore);
 
                                                     if (siftScore > 100)
@@ -219,14 +213,12 @@ namespace KMB_ImageComparison
 
                                                 if (phashScore > 0.65 || siftScore > 100)
                                                 {
-                                                    Console.WriteLine("Images match!");
                                                     Log("Images match!");
                                                     folder = matchingFolder;
                                                     matchingCount++;
                                                 }
                                                 else
                                                 {
-                                                    Console.WriteLine("Images do not match, lower PHASH than 0.65 and lower SIFT match than 100!");
                                                     Log("Images do not match, lower PHASH than 0.65 and lower SIFT match than 100!");
                                                     folder = noMatchingFolder;
                                                     notMatchingCount++;
@@ -241,7 +233,6 @@ namespace KMB_ImageComparison
                                             else
                                             {
                                                 //no asset found with this obj-id
-                                                Console.WriteLine("No asset found for ObjId: " + objId.ToString());
                                                 Log("No asset found for ObjId: " + objId.ToString());
                                                 File.Move(fileToCheck.FullName, missingImgPath + "\\" + fileToCheck.Name);
                                                 missingImgCount++;
@@ -249,32 +240,14 @@ namespace KMB_ImageComparison
                                         }
                                         else
                                         {
-                                            Console.WriteLine("Filename is not an obj-id, skipping");
                                             Log("Filename is not an obj-id, skipping");
                                         }
                                     }
                                     else
                                     {
-                                        Console.WriteLine("No jpg, skipping..");
                                         Log("No jpg, skipping..");
                                     }
                                 }
-
-                                Console.WriteLine("-------------------------");
-                                Console.WriteLine("Image comparison finished");
-                                Console.WriteLine("-------------------------");
-                                Console.WriteLine("Total matches: " + matchingCount);
-                                Console.WriteLine("Matches with PHASH: " + ((int)matchingCount - (int)siftMatchingCount).ToString());
-                                Console.WriteLine("Matches with SIFT: " + siftMatchingCount);
-                                Console.WriteLine("-------------------------");
-                                Console.WriteLine("Not matching: " + notMatchingCount);
-                                Console.WriteLine("-------------------------");
-                                Console.WriteLine("Missing assets in Picturepark: " + missingImgCount);
-                                Console.WriteLine("-------------------------");
-                                Console.WriteLine("Multiple W11 in Picturepark: " + multipleW11Count);
-                                Console.WriteLine("-------------------------");
-                                Console.WriteLine("Invalid assets in Picturepark: " + invalidAssetOnPPCount);
-                                Console.WriteLine("-------------------------");
 
                                 Log("-------------------------");
                                 Log("Image comparison finished");
@@ -360,7 +333,6 @@ namespace KMB_ImageComparison
         {
             if (!File.Exists("Configuration.txt"))
             {
-                Console.WriteLine("Config missing..");
                 Log("Config missing..");
                 return false;
             }
@@ -373,21 +345,18 @@ namespace KMB_ImageComparison
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Configuration invalid, unable to parse..");
                 Log("Configuration invalid, unable to parse..");
                 return false;
             }
 
             if (!Directory.Exists(Configuration.ImagePath))
             {
-                Console.WriteLine("ImagePath does not exist, please check the config file..");
                 Log("ImagePath does not exist, please check the config file..");
                 return false;
             }
 
             if (!Directory.Exists(Configuration.ResultPath))
             {
-                Console.WriteLine("ResultPath does not exist, please check the config file..");
                 Log("ResultPath does not exist, please check the config file..");
                 return false;
             }
@@ -402,6 +371,8 @@ namespace KMB_ImageComparison
 
         private static void Log(string logLine)
         {
+            Console.WriteLine(logLine);
+
             try
             {
                 logLine = DateTime.Now.ToString("HH:mm") + ": " + logLine;
@@ -443,7 +414,7 @@ namespace KMB_ImageComparison
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Picturepark login failed, parameter or login wrong: " + ex.ToString());
+                Log("Picturepark login failed, parameter or login wrong: " + ex.ToString());
                 return null;
             }
 
@@ -483,7 +454,16 @@ namespace KMB_ImageComparison
                 matcher.KnnMatch(observedDescriptors, matches, k, null);
                 mask = new Mat(matches.Size, 1, DepthType.Cv8U, 1);
                 mask.SetTo(new MCvScalar(255));
-                Features2DToolbox.VoteForUniqueness(matches, uniquenessThreshold, mask);
+                try
+                {
+                    Features2DToolbox.VoteForUniqueness(matches, uniquenessThreshold, mask);
+                }
+                catch (Exception ex)
+                {
+                    Log(ex.Message);
+                    Log("Error with SIFT algorithm, unable to compare images..");
+                    return 0;
+                }
             }
 
             int score = 0;
